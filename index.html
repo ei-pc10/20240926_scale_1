@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Location-based AR.js demo</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    <script type='text/javascript' src='https://raw.githack.com/AR-js-org/AR.js/master/three.js/build/ar-threex-location-only.js'></script>
+</head>
+<body style="margin: 0; overflow: hidden;">
+    <a-scene vr-mode-ui="enabled: false" embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+        <a-entity 
+            id="model"
+            gltf-model="https://raw.githubusercontent.com/ei-pc10/hitomania_3d/main/model.glb" 
+            gps-entity-place="latitude: 37.95623964531757; longitude: 139.3371717973987;" 
+            position="0 5 0" 
+            scale="1 1 1"
+            animation="property: rotation; to: 360 360 360; loop: true; dur: 10000; easing: linear">
+        </a-entity>
+
+        <script>
+            document.querySelector('a-scene').addEventListener('loaded', () => {
+                const model = document.getElementById('model');
+                
+                // カメラの位置に応じてモデルのスケールを調整する
+                window.addEventListener('gps-camera-update-position', e => {
+                    const distance = e.detail.position.coords.accuracy;
+                    let scale;
+
+                    if (/Android/i.test(navigator.userAgent)) {
+                        // Android用のスケール調整
+                        scale = Math.max(0.5, Math.min(5, distance / 80)); 
+                    } else if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                        // iPhone用のスケール調整
+                        scale = Math.max(0.5, Math.min(5, distance / 100)); 
+                    }
+
+                    model.setAttribute('scale', `${scale} ${scale} ${scale}`);
+                });
+            });
+        </script>
+
+        <a-camera gps-camera rotation-reader></a-camera>
+    </a-scene>
+</body>
+</html>
