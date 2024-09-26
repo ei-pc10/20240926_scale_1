@@ -18,29 +18,6 @@
             position="0 3 5" 
             scale="1 1 1">
         </a-entity>
-
-        <script>
-            document.querySelector('a-scene').addEventListener('loaded', () => {
-                const model = document.getElementById('model');
-                
-                // カメラの位置に応じてモデルのスケールを調整する
-                window.addEventListener('gps-camera-update-position', e => {
-                    const distance = e.detail.position.coords.accuracy;
-                    let scale;
-
-                    if (/Android/i.test(navigator.userAgent)) {
-                        // Android用のスケール調整
-                        scale = Math.max(0.5, Math.min(5, distance / 80)); 
-                    } else if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                        // iPhone用のスケール調整
-                        scale = Math.max(0.5, Math.min(5, distance / 100)); 
-                    }
-
-                    model.setAttribute('scale', `${scale} ${scale} ${scale}`);
-                });
-            });
-        </script>
-
         <a-camera gps-camera rotation-reader></a-camera>
     </a-scene>
 </body>
